@@ -8,9 +8,9 @@ namespace Common.Models
 {
     public class Student
     {
-        public int student_id{ get; set; }
-        public string sname{ get; set; }
-        public string semail{ get; set;}
+        public int id{ get; set; }
+        public string username{ get; set; }
+        public string email{ get; set;}
 
     }
 }

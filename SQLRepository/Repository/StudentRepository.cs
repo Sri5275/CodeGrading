@@ -39,7 +39,7 @@ namespace SQLRepository.Repository
                 return students;
             }
 
-            string query = "SELECT * FROM students123";
+            string query = "SELECT * FROM students";
 
             SqlCommand cmd = new SqlCommand(query, (SqlConnection)_connection);
 
@@ -51,9 +51,9 @@ namespace SQLRepository.Repository
                     {
                         Student student = new Student()
                         {
-                            student_id = Convert.ToInt32(reader["student_id"]),
-                            sname = Convert.ToString(reader["sname"]),
-                            semail = Convert.ToString(reader["semail"])
+                            id = Convert.ToInt32(reader["id"]),
+                            username = Convert.ToString(reader["username"]),
+                            email = Convert.ToString(reader["email"])
                         };
                         students.Add(student);
                     }
@@ -83,13 +83,13 @@ namespace SQLRepository.Repository
                 return false;
             }
             //PREPARE QUERY & EXECUTE QUERY
-            string insertQuery = "INSERT INTO students123 (student_id, sname, semail) VALUES (@value1, @value2, @value3)";
+            string insertQuery = "INSERT INTO students (id, username, email) VALUES (@value1, @value2, @value3)";
             SqlCommand cmd = new SqlCommand(insertQuery, (SqlConnection)_connection);
             try
             {
-                cmd.Parameters.AddWithValue("@value1", student.student_id);
-                cmd.Parameters.AddWithValue("@value2", student.sname);
-                cmd.Parameters.AddWithValue("@value3", student.semail);
+                cmd.Parameters.AddWithValue("@value1", student.id);
+                cmd.Parameters.AddWithValue("@value2", student.username);
+                cmd.Parameters.AddWithValue("@value3", student.email);
                 await cmd.ExecuteNonQueryAsync();
                 Console.WriteLine("Student details are  inserted!!");
                 return true;
@@ -118,13 +118,13 @@ namespace SQLRepository.Repository
             }
 
             //PREAPARE COMMAND
-            string updateQuery = "UPDATE students123 SET sname=@newName, semail=@newEmail WHERE student_id = @student_id";
+            string updateQuery = "UPDATE students SET username=@newName, email=@newEmail WHERE id = @id";
             SqlCommand cmd = new SqlCommand(updateQuery, (SqlConnection)_connection);
             try
             {
-                cmd.Parameters.AddWithValue("@newName", student.sname);
-                cmd.Parameters.AddWithValue("@newEmail", student.semail);
-                cmd.Parameters.AddWithValue("@student_id", student.student_id);
+                cmd.Parameters.AddWithValue("@newName", student.username);
+                cmd.Parameters.AddWithValue("@newEmail", student.email);
+                cmd.Parameters.AddWithValue("@id", student.id);
                 await cmd.ExecuteNonQueryAsync();
                 Console.WriteLine("Student Details are updated!!");
                 return true;
