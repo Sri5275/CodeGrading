@@ -32,6 +32,12 @@ namespace WebApplication1.Controllers
         {
             return await _std.updateStd(id, student);
         }
+        [HttpDelete]
+        [Route("deleteStd")]
+        public async Task<bool> deleteStd(int id)
+        {
+            return await _std.deleteStd(id);
+        }
 
 
 

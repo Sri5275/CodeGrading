@@ -142,6 +142,55 @@ namespace SQLRepository.Repository
             return false;
         }
 
+        public async Task<bool> deleteStd(int id)
+        {
+            // OPENING DB CONNECTION
+            try
+            {
+                _connection.Open();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Opening DB Connection ----->", ex.Message);
+                return false;
+            }
+
+            // PREPARE DELETE QUERY
+            string deleteQuery = "DELETE FROM students WHERE id = @id";
+            SqlCommand cmd = new SqlCommand(deleteQuery, (SqlConnection)_connection);
+
+            try
+            {
+                // ADDING PARAMETERS
+                cmd.Parameters.AddWithValue("@id", id);
+
+                // EXECUTE THE DELETE COMMAND
+                int affectedRows = await cmd.ExecuteNonQueryAsync();
+
+                // Check how many rows were affected by the command
+                if (affectedRows > 0)
+                {
+                    Console.WriteLine("Student record deleted successfully.");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("No student record found with the given ID.");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in deleting student record ----->", ex.Message);
+                return false;
+            }
+            finally
+            {
+                // CLOSING DB CONNECTION
+                _connection.Close();
+            }
+        }
+
 
     }
 }

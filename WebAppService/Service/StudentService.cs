@@ -31,6 +31,11 @@ namespace WebAppService.Service
         {
             return await std2.updateStd(id, student);
         }
+        public async Task<bool> deleteStd(int id)
+        {
+            // Delegates the responsibility of deleting the student record to std2.
+            return await std2.deleteStd(id);
+        }
 
         /*  public List<string> Getstudents()
           {

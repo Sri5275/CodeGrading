@@ -12,6 +12,8 @@ namespace WebAppService.Interface
         public Task<List<Student>> getnames();
         public Task<bool> addNewStd(Student student);
         public Task<bool> updateStd(int id, Student student);
+        public Task<bool> deleteStd(int id);
+
 
     }
 }
