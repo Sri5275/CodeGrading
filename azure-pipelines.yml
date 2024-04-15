@@ -24,7 +24,7 @@ steps:
   inputs:
     command: 'test'
     projects: '**/*[Tt]est*/*.csproj'
-    publishTestResults: false
+    publishTestResults: true
     arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura --collect "Code coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura --settings:coverage.runsettings'
      
 - task: PublishCodeCoverageResults@1
