@@ -1,64 +1,56 @@
-# ASP.NET
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+#Testing about CI
 
 trigger:
-- main
+- master
 
 pool:
   vmImage: 'windows-latest'
 
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+steps:
+- powershell: |
+    $filePath = "Common"
+    if (-not (Test-Path $filePath)) {
+        Write-Output "The file '$filePath' does not exist."
+        exit 1  # Fail the task
+    } else {
+        Write-Output "The file '$filePath' exists."
+    }
+  displayName: 'Check File Existence'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '/*.csproj'
 
-stages:
-- stage: build
-  jobs:
-    - job: build
-      steps:
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'build'
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'publish'
-          publishWebProjects: true
-          arguments: '-o $(build.artifactStagingDirectory)'
-          zipAfterPublish: false
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: $(build.artifactStagingDirectory)
-          artifact: 'drop'
-          publishLocation: 'pipeline'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '/sampletesting.UnitTest/*.csproj'
+        # arguments: '--configuration release --output $(Build.ArtifactStagingDirectory) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+    # publishTestResults: true
+    arguments: '--configuration $(BuildConfiguration) --collect:"Code coverage"'
+    publishTestResults: true
+    publishCodeCoverage: true
+
+  
+# - task: PublishCodeCoverageResults@2
+#   inputs:
+#     # codeCoverageTool: 'Cobertura'
+#     summaryFileLocation: '/*coverage.cobertura.xml'
     
-        
-- stage: test
-  jobs:
-    - job: test
-      steps:
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'build'
-      - task: DotNetCoreCLI@2
-        inputs:
-          command: 'test'
-          projects: '**/*[Tt]est*/*.csproj'
-          publishTestResults: false
-          arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura --collect "Code coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura --settings:coverage.runsettings'
-      - task: PublishCodeCoverageResults@1
-        inputs:
-          codeCoverageTool: 'Cobertura'
-          summaryFileLocation: '**/*cobertura.xml'
-
-- stage: deploy_app
-  jobs:
-    - job: deploy
-      steps:
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            buildType: 'current'
-            artifactName: 'drop'
-            targetPath: '$(Pipeline.Workspace)/drop'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '/*.csproj'
+    arguments: '--configuration release --output $(Build.ArtifactStagingDirectory) '
+    condition: always()
+    
+# - task: CopyFiles@2
+#   inputs:
+#     Contents: '/*.dll'
+#     TargetFolder: '$(build.artifactstagingdirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'dll_file'
+    publishLocation: 'Container'
