@@ -1,6 +1,46 @@
 trigger:
-- master  # This pipeline will run whenever there are changes to the master branch.
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
 steps:
+- powershell: |
+    $filePath = "Common"
+    if (-not (Test-Path $filePath)) {
+        Write-Output "The file '$filePath' does not exist."
+        exit 1  # Fail the task
+    } else {
+        Write-Output "The file '$filePath' exists."
+    }
+  displayName: 'Check File Existence'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration Release'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/WebApplication1Tests/*.csproj'
+    arguments: '--configuration Release --collect "Code coverage"'
+    publishTestResults: true
+    publishCodeCoverage: true
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    projects: '**/*.csproj'
+    arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
+    condition: always()
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'dll_file'
+    publishLocation: 'Container'
 - task: PowerShell@2
   displayName: 'GET Request'
   inputs: 
