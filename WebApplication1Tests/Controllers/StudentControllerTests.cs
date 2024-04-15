@@ -7,28 +7,42 @@ using Common.Models;
 using System.Threading.Tasks;
 using Xunit;
 using Moq;
+using WebAppService.Interface;
 
 namespace WebApplication1Tests.Controllers
 {
+    public interface IStudentDataAccess
+    {
+        Task<IEnumerable<Student>> GetStudentsAsync();
+    }
+
+    public class StudentService
+    {
+        private readonly IStudentDataAccess _dataAccess;
+
+        public StudentService(IStudentDataAccess dataAccess)
+        {
+            _dataAccess = dataAccess;
+        }
+
+        public async Task<IEnumerable<Student>> GetStudentsAsync()
+        {
+            var students = await _dataAccess.GetStudentsAsync();
+            return students;
+        }
+    }
+
     public class StudentServiceTests
     {
-        // Mock dependencies
+        private readonly Mock<IStudentDataAccess> _mockDataAccess;
         private readonly Mock<SqlConnection> _mockConnection;
-        private readonly Mock<IStudentRepository> _mockStudentRepository;
         private readonly Mock<SqlCommand> _mockCommand;
-        private readonly StudentService _studentService;
 
         public StudentServiceTests()
         {
-            // Initialize mocks
             _mockConnection = new Mock<SqlConnection>();
-            _mockStudentRepository = new Mock<IStudentRepository>();
             _mockCommand = new Mock<SqlCommand>();
-
-            // Initialize the service with the mock dependencies
-            // Initialize the service with the mock IStudentRepository
-            _studentService = new StudentService(_mockStudentRepository.Object);
-
+            _mockDataAccess = new Mock<IStudentDataAccess>();
         }
 
         [Fact]
@@ -36,10 +50,10 @@ namespace WebApplication1Tests.Controllers
         {
             // Arrange
             var expectedStudents = new List<Student>
-            {
+              {
                 new Student { id = 1, username = "Nithish", email = "thop@gmail.com" },
                 new Student { id = 2, username = "Naveen", email = "nav@gmail.com" }
-            };
+              };
 
             // Set up the mock SqlConnection to open successfully
             _mockConnection.Setup(c => c.Open()).Verifiable();
@@ -47,9 +61,9 @@ namespace WebApplication1Tests.Controllers
             // Set up the mock SqlCommand and SqlDataReader to return the expected students
             var mockReader = new Mock<SqlDataReader>();
             mockReader.SetupSequence(r => r.ReadAsync())
-                .ReturnsAsync(true)
-                .ReturnsAsync(true)
-                .ReturnsAsync(false); // End of results
+              .ReturnsAsync(true)
+              .ReturnsAsync(true)
+              .ReturnsAsync(false); // End of results
             mockReader.Setup(r => r["id"]).Returns(expectedStudents[0].id);
             mockReader.Setup(r => r["username"]).Returns(expectedStudents[0].username);
             mockReader.Setup(r => r["email"]).Returns(expectedStudents[0].email);
@@ -60,13 +74,15 @@ namespace WebApplication1Tests.Controllers
             mockReader.Setup(r => r["email"]).Returns(expectedStudents[1].email);
 
             _mockCommand.Setup(c => c.ExecuteReaderAsync())
-                .ReturnsAsync(mockReader.Object);
+              .ReturnsAsync(mockReader.Object);
+            var _studentService = new StudentService(_mockDataAccess.Object);
 
             // Act
-            var result = await _studentService.getnames();
+            var result = await _studentService.getnamesAsync();
+            //var result = await _studentService.GetNamesAsync(); // Corrected method name
 
             // Assert
-            Assert.Equal(expectedStudents.Count, result.Count);
+            Assert.Equal(expectedStudents.Count, result[0].Count);
             Assert.Equal(expectedStudents[0].id, result[0].id);
             Assert.Equal(expectedStudents[0].username, result[0].username);
             Assert.Equal(expectedStudents[0].email, result[0].email);
@@ -78,5 +94,6 @@ namespace WebApplication1Tests.Controllers
             _mockConnection.Verify(c => c.Open(), Times.Once);
             _mockCommand.Verify(c => c.ExecuteReaderAsync(), Times.Once);
         }
+
     }
 }
