@@ -15,22 +15,13 @@ steps:
     }
   displayName: 'Check File Existence'
 
-- task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 8.0'
-  inputs:
-    packageType: 'sdk'
-    version: '8.0.x'  # Specify the version you want to use (e.g., '8.0.x' for .NET 8)
-    includePreviewVersions: false  # Set to true if you want to include preview versions
-
 - task: DotNetCoreCLI@2
-  displayName: 'Build'
   inputs:
     command: 'build'
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Test'
   inputs:
     command: 'test'
     projects: '**/WebApplication1Tests/*.csproj'
@@ -39,7 +30,6 @@ steps:
     publishCodeCoverage: true
 
 - task: DotNetCoreCLI@2
-  displayName: 'Publish'
   inputs:
     command: 'publish'
     projects: '**/*.csproj'
@@ -47,45 +37,41 @@ steps:
     condition: always()
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Build Artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'dll_file'
     publishLocation: 'Container'
-
 - task: PowerShell@2
   displayName: 'GET Request'
-  inputs:
+  inputs: 
     targetType: inline
     script: |
         $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/GetName"
-        try {
-            $response = Invoke-RestMethod -Uri $uri -Method Get
-            echo $response
-        } catch {
-            Write-Error "Failed to make GET request: $_"
-            exit 1
-        }
-
+        $response = Invoke-RestMethod -Uri $uri -Method Get
+        echo $response     
 - task: PowerShell@2
-  displayName: 'POST Request'
+  displayName: 'Send POST Request'
   inputs:
     targetType: inline
     script: |
         # Define the URL for the POST request
-        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post"
+        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post?age=29&name=nithih"
 
         # Define the JSON payload to send in the request body
         $jsonPayload = @{
-            age = 34
-            name = "Navtish"
+            age = "34"
+            name = "Navtish "
+            # Add more key-value pairs as needed for your API
         } | ConvertTo-Json
 
         # Send the POST request with the JSON payload
         try {
             $response = Invoke-RestMethod -Uri $uri -Method Post -ContentType 'application/json' -Body $jsonPayload
+
+            # Output the response from the API
             echo $response
         } catch {
+            # Handle any exceptions that occur during the API request
             Write-Error "Failed to send POST request: $_"
-            exit 1
+            exit 1  # Fail the task if the request fails
         }
