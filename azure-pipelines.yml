@@ -7,7 +7,7 @@ pool:
 steps:
 - powershell: |
     # Define the API endpoint URL
-    $apiUrl = 'https://localhost:7182/Student/getAll'
+    $apiUrl = 'https://jsonplaceholder.typicode.com/todos/1'
 
     # Retrieve API token from environment variable
     $apiToken = $env:API_TOKEN
