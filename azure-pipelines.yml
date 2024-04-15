@@ -19,12 +19,12 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: '/*.csproj'
+    projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '/sampletesting.UnitTest/*.csproj'
+    projects: '/*[T]tests/*.csproj'
         # arguments: '--configuration release --output $(Build.ArtifactStagingDirectory) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
     # publishTestResults: true
     arguments: '--configuration $(BuildConfiguration) --collect:"Code coverage"'
@@ -41,7 +41,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '/*.csproj'
+    projects: '**/*.csproj'
     arguments: '--configuration release --output $(Build.ArtifactStagingDirectory) '
     condition: always()
     
