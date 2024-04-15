@@ -14,6 +14,8 @@
           "SQLRepository": "1.0.0",
           "Swashbuckle.AspNetCore": "6.4.0",
           "WebAppService": "1.0.0",
+          "coverlet.collector": "6.0.2",
+          "coverlet.msbuild": "6.0.2",
           "xunit": "2.7.1",
           "xunit.runner.visualstudio": "2.5.8"
         },
@@ -55,6 +57,8 @@
           }
         }
       },
+      "coverlet.collector/6.0.2": {},
+      "coverlet.msbuild/6.0.2": {},
       "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
         "runtime": {
           "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
@@ -583,6 +587,20 @@
       "sha512": "sha512-l1Xm2MWOF2Mzcwuarlw8kWQXLZk3UeB55aQXVyjj23aBfDwOZ3gu5GP2kJ6KlmZeZv2TCzw7x4L3V36iNr3gww==",
       "path": "azure.identity/1.10.3",
       "hashPath": "azure.identity.1.10.3.nupkg.sha512"
+    },
+    "coverlet.collector/6.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-bJShQ6uWRTQ100ZeyiMqcFlhP7WJ+bCuabUs885dJiBEzMsJMSFr7BOyeCw4rgvQokteGi5rKQTlkhfQPUXg2A==",
+      "path": "coverlet.collector/6.0.2",
+      "hashPath": "coverlet.collector.6.0.2.nupkg.sha512"
+    },
+    "coverlet.msbuild/6.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8b4jBNH7mcQy1otyQErjjIUuGD74XxKZ1wvDufbY7jhWwckl7wIa+icjwdPYeI0aYMS4Tp63LIZvyMFjWwOMDw==",
+      "path": "coverlet.msbuild/6.0.2",
+      "hashPath": "coverlet.msbuild.6.0.2.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
       "type": "package",
