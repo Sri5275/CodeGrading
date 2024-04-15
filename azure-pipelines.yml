@@ -5,36 +5,10 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-- powershell: |
-    # Define the API endpoint URL
-    $apiUrl = 'https://jsonplaceholder.typicode.com/todos/1'
-
-    # Retrieve API token from environment variable
-    $apiToken = $env:API_TOKEN
-
-    # Set up HTTP headers
-    $headers = @{
-        "Authorization" = "Bearer $apiToken"
-        "Content-Type" = "application/json"
-    }
-
-    try {
-        # Send GET request to API endpoint
-        $response = Invoke-RestMethod -Uri $apiUrl -Method Get -Headers $headers
-
-        # Parse the JSON response
-        $parsedResponse = $response | ConvertFrom-Json
-
-        # Extract and process data from the parsed response
-        $extractedData = $parsedResponse.data  # Adjust the property based on the API's response structure
-        Write-Output "Extracted data: $extractedData"
-
-    } catch [System.Net.WebException] {
-        Write-Error "Network error occurred: $_"
-        exit 1
-    } catch {
-        # Handle other exceptions
-        Write-Error "Failed to call API: $_"
-        exit 1
-    }
-  displayName: 'Call API and Process Data'
+- task: PowerShell@2
+  inputs: 
+    targetType: inline
+    script: |
+        $uri = "https://jsonplaceholder.typicode.com/posts/1"
+        $response = Invoke-RestMethod -Uri $uri -Method Get
+        echo $response
