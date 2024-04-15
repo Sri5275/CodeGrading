@@ -15,12 +15,12 @@ steps:
     targetType: inline
     script: |
         # Define the URL for the POST request
-        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post"
+        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post?age=29&name=nithih"
 
         # Define the JSON payload to send in the request body
         $jsonPayload = @{
-            key1 = "Naveen Nithish"
-            key2 = "How *Le's"
+            age = "34"
+            name = "Navtish "
             # Add more key-value pairs as needed for your API
         } | ConvertTo-Json
 
