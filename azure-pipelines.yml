@@ -23,7 +23,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '/[Tt]ests/*.csproj'
+    projects: '/*[Tt]ests/*.csproj'
     # arguments: '--configuration release --output $(Build.ArtifactStagingDirectory) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
     # publishTestResults: true
     arguments: '--configuration $(BuildConfiguration) --collect:"Code coverage"'
