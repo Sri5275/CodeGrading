@@ -15,6 +15,13 @@ steps:
     }
   displayName: 'Check File Existence'
 
+- task: UseDotNet@2
+  displayName: 'Use .NET Core SDK 5.0'
+  inputs:
+    packageType: 'sdk'
+    version: '5.0.x'  # Specify the version you want to use (e.g., '6.0.x' for .NET 6)
+    includePreviewVersions: false  # Set to true if you want to include preview versions
+
 - task: DotNetCoreCLI@2
   displayName: 'Build'
   inputs:
@@ -66,7 +73,7 @@ steps:
     targetType: inline
     script: |
         # Define the URL for the POST request
-        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post?age=29&name=nithih"
+        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post"
 
         # Define the JSON payload to send in the request body
         $jsonPayload = @{
@@ -77,10 +84,8 @@ steps:
         # Send the POST request with the JSON payload
         try {
             $response = Invoke-RestMethod -Uri $uri -Method Post -ContentType 'application/json' -Body $jsonPayload
-
-            # Output the response from the API
             echo $response
         } catch {
             Write-Error "Failed to send POST request: $_"
-            exit 1  # Fail the task if the request fails
+            exit 1
         }
