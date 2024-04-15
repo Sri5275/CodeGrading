@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Moq; // To mock dependencies
 
-namespace YourNamespace.Tests
+namespace WebApplication1Tests.Controllers
 {
     public class StudentServiceTests
     {
