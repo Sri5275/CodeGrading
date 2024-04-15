@@ -40,6 +40,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.CodeCoverage": {
+              "target": "Package",
+              "version": "[17.9.0, )"
+            },
+            "OpenCoverToCoberturaConverter": {
+              "target": "Package",
+              "version": "[0.3.4, )"
+            },
             "xunit": {
               "target": "Package",
               "version": "[2.7.1, )"
@@ -111,9 +119,17 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.CodeCoverage": {
+              "target": "Package",
+              "version": "[17.9.0, )"
+            },
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[5.1.5, )"
+            },
+            "OpenCoverToCoberturaConverter": {
+              "target": "Package",
+              "version": "[0.3.4, )"
             },
             "xunit": {
               "target": "Package",
@@ -192,6 +208,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.CodeCoverage": {
+              "target": "Package",
+              "version": "[17.9.0, )"
+            },
+            "OpenCoverToCoberturaConverter": {
+              "target": "Package",
+              "version": "[0.3.4, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
@@ -273,6 +297,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.CodeCoverage": {
+              "target": "Package",
+              "version": "[17.9.0, )"
+            },
+            "OpenCoverToCoberturaConverter": {
+              "target": "Package",
+              "version": "[0.3.4, )"
+            },
             "xunit": {
               "target": "Package",
               "version": "[2.7.1, )"
