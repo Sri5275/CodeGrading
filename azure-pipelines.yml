@@ -16,12 +16,14 @@ steps:
   displayName: 'Check File Existence'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Build'
   inputs:
     command: 'build'
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Test'
   inputs:
     command: 'test'
     projects: '**/WebApplication1Tests/*.csproj'
@@ -30,6 +32,7 @@ steps:
     publishCodeCoverage: true
 
 - task: DotNetCoreCLI@2
+  displayName: 'Publish'
   inputs:
     command: 'publish'
     projects: '**/*.csproj'
@@ -37,6 +40,7 @@ steps:
     condition: always()
 
 - task: PublishBuildArtifacts@1
+  displayName: 'PublishBuildArtifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'dll_file'
