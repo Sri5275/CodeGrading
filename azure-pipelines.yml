@@ -16,6 +16,7 @@ steps:
         exit 1  # Fail the task
     } else {
         Write-Output "The file '$filePath' exists."
+    }
   displayName: 'Check File Existence'
 
 - task: DotNetCoreCLI@2
