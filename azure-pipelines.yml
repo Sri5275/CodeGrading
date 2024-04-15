@@ -18,11 +18,6 @@ stages:
         packageType: 'sdk'
         version: '6.x'  # Specify the .NET version to use
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Restore dependencies'
-      inputs:
-        command: 'restore'
-        projects: '**/*.csproj'
 
     - task: DotNetCoreCLI@2
       displayName: 'Build project'
