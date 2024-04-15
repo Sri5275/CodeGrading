@@ -21,10 +21,16 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 - task: DotNetCoreCLI@2
-  displayName: 'Run Unit Tests'
   inputs:
     command: 'test'
-    projects: '**/*Tests/*.csproj'  # Adjust the path pattern as per your test projects
+    projects: '**/*[Tt]est*/*.csproj'
+    publishTestResults: false
+    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura --collect "Code coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura --settings:coverage.runsettings'
+     
+- task: PublishCodeCoverageResults@1
+  inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '**/*cobertura.xml'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
