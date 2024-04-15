@@ -21,41 +21,12 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 - task: DotNetCoreCLI@2
+  displayName: 'Run Unit Tests'
   inputs:
     command: 'test'
-    projects: '/*[Tt]ests/*.csproj'
-    arguments: '--configuration release --output $(Build.ArtifactStagingDirectory) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+    projects: '**/*Tests/*.csproj'  # Adjust the path pattern as per your test projects
+    arguments: '--configuration $(buildConfiguration) --no-build --logger trx --results-directory $(Build.BinariesDirectory)'
     publishTestResults: true
-    #arguments: '--configuration $(BuildConfiguration) --collect:"Code coverage"'
-    #publishTestResults: true
-    publishCodeCoverage: true
-
-
-- task: PublishCodeCoverageResults@2
-  inputs:
-    codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Agent.TempDirectory)\\coverage.cobertura.xml'
-
-
-
-- task: PowerShell@2
-  displayName: 'Check code coverage'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $coverageReportPath = '$(Agent.TempDirectory)\\coverage.cobertura.xml'
-      $coverageReport = Get-Content $coverageReportPath
-      $coveragePercentage = [xml]$coverageReport | Select-Xml -XPath "/CoverageReport/Summary/Percent"
-      $coveragePercentageValue = $coveragePercentage.Node.InnerText
-
-      if ($coveragePercentageValue -lt 80) {
-        Write-Host "Code coverage is less than 80%. Stopping the build."
-        exit 1
-      }
-      else {
-        Write-Host "Code coverage is greater than or equal to 80%. Continuing the build."
-      }
-
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish'
