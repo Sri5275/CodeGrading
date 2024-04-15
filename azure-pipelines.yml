@@ -1,7 +1,7 @@
 #Testing about CI
 
 trigger:
-- main
+- master
 
 pool:
   vmImage: 'windows-latest'
@@ -24,7 +24,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '**/WebAppplication1Tests/*.csproj'
+    projects: '**/WebApplication1Tests/*.csproj'
         # arguments: '--configuration release --output $(Build.ArtifactStagingDirectory) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
     # publishTestResults: true
     arguments: '--configuration $(BuildConfiguration) --collect:"Code coverage"'
