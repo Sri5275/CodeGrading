@@ -6,7 +6,7 @@ steps:
   inputs: 
     targetType: inline
     script: |
-        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Get"
+        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/GetName"
         $response = Invoke-RestMethod -Uri $uri -Method Get
         echo $response     
 - task: PowerShell@2
