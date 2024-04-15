@@ -37,8 +37,8 @@ namespace WebApplication1Tests.Controllers
             // Arrange
             var expectedStudents = new List<Student>
             {
-                new Student { id = 1, username = "JohnDoe", email = "john@example.com" },
-                new Student { id = 2, username = "JaneDoe", email = "jane@example.com" }
+                new Student { id = 1, username = "Nithish", email = "thop@gmail.com" },
+                new Student { id = 2, username = "Naveen", email = "nav@gmail.com" }
             };
 
             // Set up the mock SqlConnection to open successfully
