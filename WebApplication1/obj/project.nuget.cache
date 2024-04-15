@@ -1,11 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "xC5QQ3sFG48LFas4XcscbI82bCG8OftETNaDJZ0HV0o3FANOdQ1K/kDG0yVA/t5Jsnz/vv5DnIHQDJShddxzng==",
+  "dgSpecHash": "8zCYnLuqeqMcQQcK91ITj1LCy+DdwxMBDJwK6k6oyefw/Pxh0BO8iCnNUdYu2EA6FcyrTO7K/a5+IaQsWenDJw==",
   "success": true,
   "projectFilePath": "C:\\Users\\SRI\\Desktop\\VStudioC#\\CodeGrading\\WebApplication1\\WebApplication1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\SRI\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\SRI\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
+    "C:\\Users\\SRI\\.nuget\\packages\\coverlet.collector\\6.0.2\\coverlet.collector.6.0.2.nupkg.sha512",
+    "C:\\Users\\SRI\\.nuget\\packages\\coverlet.msbuild\\6.0.2\\coverlet.msbuild.6.0.2.nupkg.sha512",
     "C:\\Users\\SRI\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "C:\\Users\\SRI\\.nuget\\packages\\microsoft.codecoverage\\17.9.0\\microsoft.codecoverage.17.9.0.nupkg.sha512",
     "C:\\Users\\SRI\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
