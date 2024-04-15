@@ -1,56 +1,85 @@
-#Testing about CI
-
 trigger:
 - master
 
 pool:
   vmImage: 'windows-latest'
 
+variables:
+  BuildConfiguration: 'Release'
+  BuildPlatform: 'x64'
+
 steps:
-- powershell: |
-    $filePath = "Common"
-    if (-not (Test-Path $filePath)) {
-        Write-Output "The file '$filePath' does not exist."
-        exit 1  # Fail the task
-    } else {
-        Write-Output "The file '$filePath' exists."
-    }
+- task: PowerShell@2
   displayName: 'Check File Existence'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $filePath = "Common"
+      if (-not (Test-Path $filePath)) {
+          Write-Output "The file '$filePath' does not exist."
+          exit 1  # Fail the task
+      } else {
+          Write-Output "The file '$filePath' exists."
+      }
+
 - task: DotNetCoreCLI@2
+  displayName: 'Build'
   inputs:
     command: 'build'
     projects: '**/*.csproj'
+    arguments: '--configuration $(BuildConfiguration) --platform $(BuildPlatform)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Test'
   inputs:
     command: 'test'
     projects: '**/WebApplication1Tests/*.csproj'
-        # arguments: '--configuration release --output $(Build.ArtifactStagingDirectory) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
-    # publishTestResults: true
     arguments: '--configuration $(BuildConfiguration) --collect:"Code coverage"'
     publishTestResults: true
     publishCodeCoverage: true
 
-  
-# - task: PublishCodeCoverageResults@2
-#   inputs:
-#     # codeCoverageTool: 'Cobertura'
-#     summaryFileLocation: '/*coverage.cobertura.xml'
-    
 - task: DotNetCoreCLI@2
+  displayName: 'Publish'
   inputs:
     command: 'publish'
     publishWebProjects: false
     projects: '**/*.csproj'
-    arguments: '--configuration release --output $(Build.ArtifactStagingDirectory) '
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     condition: always()
-    
-# - task: CopyFiles@2
-#   inputs:
-#     Contents: '/*.dll'
-#     TargetFolder: '$(build.artifactstagingdirectory)'
+
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish Build Artifacts'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'dll_file'
     publishLocation: 'Container'
+
+# Here, you can integrate your API call and data extraction script
+- task: PowerShell@2
+  displayName: 'API Call and Data Extraction'
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Define the API endpoint URL
+      $apiUrl = 'https://localhost:7182/Student/getAll'
+
+      # Make the API request using Invoke-RestMethod
+      try {
+          # Since no authentication is required, we don't need to include headers
+          $response = Invoke-RestMethod -Uri $apiUrl -Method Get
+
+          # Parse the response if it is in JSON format
+          $parsedResponse = $response | ConvertFrom-Json
+
+          # Extract data from the parsed response
+          $extractedData = $parsedResponse.data  # Adjust the property based on the API's response structure
+
+          # Process the extracted data as needed
+          Write-Output "Extracted data: $extractedData"
+
+          # You can save the data to a file, a database, or perform other processing here
+      } catch {
+          # Handle any exceptions that occur during the API call
+          Write-Error "Failed to call API: $_"
+          exit 1  # Fail the task
+      }
