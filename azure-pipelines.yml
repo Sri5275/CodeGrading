@@ -16,10 +16,10 @@ steps:
   displayName: 'Check File Existence'
 
 - task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 5.0'
+  displayName: 'Use .NET Core SDK 8.0'
   inputs:
     packageType: 'sdk'
-    version: '5.0.x'  # Specify the version you want to use (e.g., '6.0.x' for .NET 6)
+    version: '8.0.x'  # Specify the version you want to use (e.g., '8.0.x' for .NET 8)
     includePreviewVersions: false  # Set to true if you want to include preview versions
 
 - task: DotNetCoreCLI@2
