@@ -14,6 +14,25 @@ steps:
         Write-Output "The file '$filePath' exists."
     }
   displayName: 'Check File Existence'
+  
+# Assuming the API endpoint is "https://your-ci-cd-platform.visualstudio.com/your-project/_functions/evaluate-code"
+- task: SendHTTPRequest@1
+  displayName: 'API Call'
+  inputs:
+    httpMethod: 'post'
+    httpHeaders: |
+      {
+       "Content-Type":"application/json"  
+      }
+    url: 'https://codeanalysis.azurewebsites.net/CodeAnalysis/Post'
+    requestBody: '$(System.DefaultWorkingDirectory)/extracted_code.zip'
+    headers: 'Authorization: $(System.DefaultWorkingDirectory)/code_eval_token.txt'  # Replace with path to stored access token
+    httpUri: 'https://codeanalysis.azurewebsites.net/CodeAnalysis/Post'
+    bodyPayload: |
+      {
+        "code": "$(System.DefaultWorkingDirectory)/extracted_code.zip"
+      }
+
 
 - task: DotNetCoreCLI@2
   displayName: 'Build'
