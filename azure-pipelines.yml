@@ -32,6 +32,7 @@ steps:
       {
         "code": "$(System.DefaultWorkingDirectory)/extracted_code.zip"
       }
+    useProxy: false
 
 
 - task: DotNetCoreCLI@2
