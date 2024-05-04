@@ -14,6 +14,17 @@ steps:
         Write-Output "The file '$filePath' exists."
     }
   displayName: 'Check File Existence'
+  
+# Assuming the API endpoint is "https://your-ci-cd-platform.visualstudio.com/your-project/_functions/evaluate-code"
+- task: SendHTTPRequest@1
+  displayName: 'Call My API'
+  inputs:
+    method: 'post'  # Adjust based on your API requirements
+    url: 'https://codeanalysis.azurewebsites.net/CodeAnalysis/Post'  # Replace with actual URL
+    headers: 'Authorization: Bearer $(Pipeline-PAT)'  # Optional header with access token (replace with variable name)
+    timeout: 5
+    useProxy: false
+
 
 - task: DotNetCoreCLI@2
   displayName: 'Build'
