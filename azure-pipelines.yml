@@ -20,7 +20,7 @@ steps:
   displayName: 'Call My API'
   inputs:
     method: 'post'  # Adjust based on your API requirements
-    url: 'https://codeanalysis.azurewebsites.net/CodeAnalysis/Post'  # Replace with actual URL
+    url: 'https://localhost:7079/CodeAnalysis/Post?age=56&name=nithish'  # Replace with actual URL
     headers: 'Authorization: Bearer $(Pipeline-PAT)'  # Optional header with access token (replace with variable name)
     timeout: 5
     useProxy: false
