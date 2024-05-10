@@ -4,6 +4,9 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
+variables:
+  buildConfiguration: Release
+
 steps:
 - powershell: |
     $filePath = "Common"
