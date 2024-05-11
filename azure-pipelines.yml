@@ -55,14 +55,16 @@ steps:
     targetType: inline
     script: |
         # Define the URL for the POST request
-        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post?age=29&name=nithih"
+        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post"
+        $archiveFile = "$(Build.ArtifactStagingDirectory)/code.zip"
+        Compress-Archive -Path "$(Build.ArtifactStagingDirectory)\**\*.dll" -DestinationPath $archiveFile
 
-        # Define the JSON payload to send in the request body
-        $jsonPayload = @{
-            age = "34"
-            name = "Navtish "
-            # Add more key-value pairs as needed for your API
-        } | ConvertTo-Json
+        # # Define the JSON payload to send in the request body
+        # $jsonPayload = @{
+        #     age = "34"
+        #     name = "Navtish "
+        #     # Add more key-value pairs as needed for your API
+        # } | ConvertTo-Json
 
         # Send the POST request with the JSON payload
         try {
