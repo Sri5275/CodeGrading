@@ -18,23 +18,23 @@ steps:
 
 - script: |
 
-    code_directory = $(System.DefaultWorkingDirectory)
+    $code_directory = $(System.DefaultWorkingDirectory)
 
     # archive_file = "$(Build.ArtifactStagingDirectory)/source_code.zip"
     # zip -r $archive_file $code_directory
 
     # Option 2: Archive specific files/folders (modify patterns)
-    archive_file = "$(Build.ArtifactStagingDirectory)/source_code.zip"
+    $archive_file = "$(Build.ArtifactStagingDirectory)/source_code.zip"
     zip -r $archive_file $code_directory/**/*.cs  # Include all .cs files recursively
 
     # Construct the API request URL (replace with your API endpoint)
-    api_url = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post"
+    $api_url = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post"
 
     # Prepare request body with the archived code
-    request_body = @{ ("code", (Get-Content -Path $archive_file -AsByteStream)) } | ConvertTo-Json
+    $request_body = @{ ("code", (Get-Content -Path $archive_file -AsByteStream)) } | ConvertTo-Json
 
     # Set headers with authentication token (if applicable)
-    headers = @{ ("Authorization", ("Bearer Pipeline-PAT")) }
+    $headers = @{ ("Authorization", ("Bearer Pipeline-PAT")) }
 
     # Send POST request with the archived code to the API
     try {
