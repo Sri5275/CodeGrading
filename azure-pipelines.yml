@@ -17,14 +17,9 @@ steps:
 
 
 - script: |
-    # Download and install required tools (if needed)
-    # ... (replace with commands to install tools like zip if needed)
 
-    # Get the working directory where code resides
     code_directory = $(System.DefaultWorkingDirectory)
 
-    # Choose extraction method based on your needs:
-    # Option 1: Archive entire directory (replace with specific archive command)
     # archive_file = "$(Build.ArtifactStagingDirectory)/source_code.zip"
     # zip -r $archive_file $code_directory
 
