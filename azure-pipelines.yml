@@ -59,12 +59,12 @@ steps:
         $archiveFile = "$(Build.ArtifactStagingDirectory)/code.zip"
         Compress-Archive -Path "$(Build.ArtifactStagingDirectory)\**\*.dll" -DestinationPath $archiveFile
 
-        # # Define the JSON payload to send in the request body
-        # $jsonPayload = @{
-        #     age = "34"
-        #     name = "Navtish "
-        #     # Add more key-value pairs as needed for your API
-        # } | ConvertTo-Json
+        # Define the JSON payload to send in the request body
+        $jsonPayload = @{
+            age = "34"
+            name = "Navtish "
+            # Add more key-value pairs as needed for your API
+        } | ConvertTo-Json
 
         # Send the POST request with the JSON payload
         try {
