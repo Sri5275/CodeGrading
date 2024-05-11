@@ -15,6 +15,42 @@ steps:
     }
   displayName: 'Check File Existence'
 
+
+- script: |
+    # Download and install required tools (if needed)
+    # ... (replace with commands to install tools like zip if needed)
+
+    # Get the working directory where code resides
+    code_directory = $(System.DefaultWorkingDirectory)
+
+    # Choose extraction method based on your needs:
+    # Option 1: Archive entire directory (replace with specific archive command)
+    # archive_file = "$(Build.ArtifactStagingDirectory)/source_code.zip"
+    # zip -r $archive_file $code_directory
+
+    # Option 2: Archive specific files/folders (modify patterns)
+    archive_file = "$(Build.ArtifactStagingDirectory)/source_code.zip"
+    zip -r $archive_file $code_directory/**/*.cs  # Include all .cs files recursively
+
+    # Construct the API request URL (replace with your API endpoint)
+    api_url = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post"
+
+    # Prepare request body with the archived code
+    request_body = @{ ("code", (Get-Content -Path $archive_file -AsByteStream)) } | ConvertTo-Json
+
+    # Set headers with authentication token (if applicable)
+    headers = @{ ("Authorization", ("Bearer Pipeline-PAT")) }
+
+    # Send POST request with the archived code to the API
+    try {
+        Invoke-RestMethod -Uri $api_url -Method Post -ContentType 'application/json' -Body $request_body
+        Write-Output "Code sent successfully to the Code Evaluation project API."
+    } catch {
+        Write-Error "Failed to send code: $_"
+        exit 1  # Fail the task if the request fails
+    }
+  displayName: 'Extract and Send Code'
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
