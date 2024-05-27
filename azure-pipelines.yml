@@ -16,7 +16,7 @@ steps:
   displayName: 'Check File Existence'
 
 
-- script: |
+- pwsh : |
       $uri = "https://raw.githubusercontent.com/Thoparam-sai-nithish/DevOps/master/DevOpsTests/UnitTestDemoTests.cs"
       $fileContent = Invoke-RestMethod -Uri $uri -Method Get
       echo "Downloaded File Content is: $fileContent"
@@ -36,7 +36,6 @@ steps:
       } | ConvertTo-Json
       $response = Invoke-RestMethod -Uri $checkCodeUri -Method Post -ContentType "application/json" -Body $checkCodeBody
       echo "CHECK CODE RESPONSE : $response"
-      pwsh: true
   displayName: 'Run Code Analysis'
   
 
