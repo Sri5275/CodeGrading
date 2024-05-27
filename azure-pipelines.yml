@@ -65,11 +65,3 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'dll_file'
     publishLocation: 'Container'
-- task: PowerShell@2
-  displayName: 'GET Request'
-  inputs: 
-    targetType: inline
-    script: |
-        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/GetName"
-        $response = Invoke-RestMethod -Uri $uri -Method Get
-        echo $response     
