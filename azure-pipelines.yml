@@ -14,27 +14,38 @@ steps:
         Write-Output "The file '$filePath' exists."
     }
   displayName: 'Check File Existence'
-  
-# Assuming the API endpoint is "https://your-ci-cd-platform.visualstudio.com/your-project/_functions/evaluate-code"
-- task: SendHTTPRequest@1
-  displayName: 'Call My API'
-  inputs:
-    method: 'post'  # Adjust based on your API requirements
-    url: 'https://jsonplaceholder.typicode.com/todos/1'  # Replace with actual URL
-    headers: 'Authorization: Bearer $(Pipeline-PAT)'  # Optional header with access token (replace with variable name)
-    timeout: 5
-    useProxy: false
 
+
+- pwsh : |
+      $uri = "https://raw.githubusercontent.com/Thoparam-sai-nithish/DevOps/master/DevOpsTests/UnitTestDemoTests.cs"
+      $fileContent = Invoke-RestMethod -Uri $uri -Method Get
+      echo "Downloaded File Content is: $fileContent"
+
+      # CHECK KEYWORDS
+      $checkKeywordsUri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/CheckKeywords"
+      $checkKeywordsBody = @{
+          "CodeSnippet" = $fileContent
+      } | ConvertTo-Json
+      $response = Invoke-RestMethod -Uri $checkKeywordsUri -Method Post -ContentType "application/json" -Body $checkKeywordsBody
+      echo "CHECK KEYWORDS RESPONSE : $response"
+
+      # CHECK CODE (uncommented in the original script)
+      $checkCodeUri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/CheckCode"
+      $checkCodeBody = @{
+          "CodeSnippet" = $fileContent
+      } | ConvertTo-Json
+      $response = Invoke-RestMethod -Uri $checkCodeUri -Method Post -ContentType "application/json" -Body $checkCodeBody
+      echo "CHECK CODE RESPONSE : $response"
+  displayName: 'Run Code Analysis'
+  
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build'
   inputs:
     command: 'build'
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Test'
   inputs:
     command: 'test'
     projects: '**/WebApplication1Tests/*.csproj'
@@ -43,7 +54,6 @@ steps:
     publishCodeCoverage: true
 
 - task: DotNetCoreCLI@2
-  displayName: 'Publish'
   inputs:
     command: 'publish'
     projects: '**/*.csproj'
@@ -51,42 +61,7 @@ steps:
     condition: always()
 
 - task: PublishBuildArtifacts@1
-  displayName: 'PublishBuildArtifacts'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'dll_file'
     publishLocation: 'Container'
-- task: PowerShell@2
-  displayName: 'GET Request'
-  inputs: 
-    targetType: inline
-    script: |
-        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/GetName"
-        $response = Invoke-RestMethod -Uri $uri -Method Get
-        echo $response     
-- task: PowerShell@2
-  displayName: 'Send POST Request'
-  inputs:
-    targetType: inline
-    script: |
-        # Define the URL for the POST request
-        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post?age=29&name=nithih"
-
-        # Define the JSON payload to send in the request body
-        $jsonPayload = @{
-            age = "34"
-            name = "Navtish "
-            # Add more key-value pairs as needed for your API
-        } | ConvertTo-Json
-
-        # Send the POST request with the JSON payload
-        try {
-            $response = Invoke-RestMethod -Uri $uri -Method Post -ContentType 'application/json' -Body $jsonPayload
-
-            # Output the response from the API
-            echo $response
-        } catch {
-            # Handle any exceptions that occur during the API request
-            Write-Error "Failed to send POST request: $_"
-            exit 1  # Fail the task if the request fails
-        }
