@@ -17,34 +17,28 @@ steps:
 
 
 - script: |
+      $uri = "https://raw.githubusercontent.com/Thoparam-sai-nithish/DevOps/master/DevOpsTests/UnitTestDemoTests.cs"
+      $fileContent = Invoke-RestMethod -Uri $uri -Method Get
+      echo "Downloaded File Content is: $fileContent"
 
-    $code_directory = $(System.DefaultWorkingDirectory)
+      # CHECK KEYWORDS
+      $checkKeywordsUri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/CheckKeywords"
+      $checkKeywordsBody = @{
+          "CodeSnippet" = $fileContent
+      } | ConvertTo-Json
+      $response = Invoke-RestMethod -Uri $checkKeywordsUri -Method Post -ContentType "application/json" -Body $checkKeywordsBody
+      echo "CHECK KEYWORDS RESPONSE : $response"
 
-    # archive_file = "$(Build.ArtifactStagingDirectory)/source_code.zip"
-    # zip -r $archive_file $code_directory
-
-    # Option 2: Archive specific files/folders (modify patterns)
-    $archive_file = "$(Build.ArtifactStagingDirectory)/source_code.zip"
-    zip -r $archive_file $code_directory/**/*.cs  # Include all .cs files recursively
-
-    # Construct the API request URL (replace with your API endpoint)
-    $api_url = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post"
-
-    # Prepare request body with the archived code
-    $request_body = @{ ("code", (Get-Content -Path $archive_file -AsByteStream)) } | ConvertTo-Json
-
-    # Set headers with authentication token (if applicable)
-    $headers = @{ ("Authorization", ("Bearer Pipeline-PAT")) }
-
-    # Send POST request with the archived code to the API
-    try {
-        Invoke-RestMethod -Uri $api_url -Method Post -ContentType 'application/json' -Body $request_body
-        Write-Output "Code sent successfully to the Code Evaluation project API."
-    } catch {
-        Write-Error "Failed to send code: $_"
-        exit 1  # Fail the task if the request fails
-    }
-  displayName: 'Extract and Send Code'
+      # CHECK CODE (uncommented in the original script)
+      $checkCodeUri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/CheckCode"
+      $checkCodeBody = @{
+          "CodeSnippet" = $fileContent
+      } | ConvertTo-Json
+      $response = Invoke-RestMethod -Uri $checkCodeUri -Method Post -ContentType "application/json" -Body $checkCodeBody
+      echo "CHECK CODE RESPONSE : $response"
+      pwsh: true
+  displayName: 'Run Code Analysis'
+  
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -80,31 +74,3 @@ steps:
         $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/GetName"
         $response = Invoke-RestMethod -Uri $uri -Method Get
         echo $response     
-- task: PowerShell@2
-  displayName: 'Send POST Request'
-  inputs:
-    targetType: inline
-    script: |
-        # Define the URL for the POST request
-        $uri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/Post"
-        $archiveFile = "$(Build.ArtifactStagingDirectory)/code.zip"
-        Compress-Archive -Path "$(Build.ArtifactStagingDirectory)\**\*.dll" -DestinationPath $archiveFile
-
-        # Define the JSON payload to send in the request body
-        $jsonPayload = @{
-            age = "34"
-            name = "Navtish "
-            # Add more key-value pairs as needed for your API
-        } | ConvertTo-Json
-
-        # Send the POST request with the JSON payload
-        try {
-            $response = Invoke-RestMethod -Uri $uri -Method Post -ContentType 'application/json' -Body $jsonPayload
-
-            # Output the response from the API
-            echo $response
-        } catch {
-            # Handle any exceptions that occur during the API request
-            Write-Error "Failed to send POST request: $_"
-            exit 1  # Fail the task if the request fails
-        }
