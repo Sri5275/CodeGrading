@@ -21,13 +21,10 @@ steps:
       $fileContent = Invoke-RestMethod -Uri $uri -Method Get
       echo "Downloaded File Content is: $fileContent"
 
-      # Ensure the file content is a string before sending it
-      $fileContentString = [System.Text.Encoding]::UTF8.GetString([System.Text.Encoding]::UTF8.GetBytes($fileContent))
-
       # CHECK KEYWORDS
       $checkKeywordsUri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/CheckKeywords"
       $checkKeywordsBody = @{
-          "CodeSnippet" = $fileContentString
+          "CodeSnippet" = $fileContent
       } | ConvertTo-Json
       $response = Invoke-RestMethod -Uri $checkKeywordsUri -Method Post -ContentType "application/json" -Body $checkKeywordsBody
       echo "CHECK KEYWORDS RESPONSE : $response"
@@ -35,7 +32,7 @@ steps:
       # CHECK CODE
       $checkCodeUri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/CheckCode"
       $checkCodeBody = @{
-          "code" = $fileContentString
+          "code" = $fileContent
       } | ConvertTo-Json
       $response = Invoke-RestMethod -Uri $checkCodeUri -Method Post -ContentType "application/json" -Body $checkCodeBody
       echo "CHECK CODE RESPONSE : $response"
