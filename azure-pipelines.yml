@@ -29,10 +29,10 @@ steps:
       $response = Invoke-RestMethod -Uri $checkKeywordsUri -Method Post -ContentType "application/json" -Body $checkKeywordsBody
       echo "CHECK KEYWORDS RESPONSE : $response"
 
-      # CHECK CODE (uncommented in the original script)
+      # CHECK CODE
       $checkCodeUri = "https://codeanalysis.azurewebsites.net/CodeAnalysis/CheckCode"
       $checkCodeBody = @{
-          "CodeSnippet" = $fileContent
+          "code" = $fileContent
       } | ConvertTo-Json
       $response = Invoke-RestMethod -Uri $checkCodeUri -Method Post -ContentType "application/json" -Body $checkCodeBody
       echo "CHECK CODE RESPONSE : $response"
