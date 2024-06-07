@@ -198,9 +198,33 @@ namespace WebApplication1.Controllers
 
         private bool CheckCodeDuplication(string code)
         {
-            // Basic algorithm to detect duplicated code blocks
-            // For simplicity, let's assume there's no duplicated code
-            return true; 
+            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                             .Select(line => line.Trim())
+                             .Where(line => !string.IsNullOrWhiteSpace(line))
+                             .ToList();
+
+            var lineHashes = new Dictionary<int, int>();
+
+            for (int i = 0; i < lines.Count - 1; i++)
+            {
+                string linePair = lines[i] + lines[i + 1];
+                int hash = linePair.GetHashCode();
+
+                if (lineHashes.ContainsKey(hash))
+                {
+                    lineHashes[hash]++;
+                    if (lineHashes[hash] > 1)
+                    {
+                        return false; // Duplicate code found
+                    }
+                }
+                else
+                {
+                    lineHashes[hash] = 1;
+                }
+            }
+
+            return true; // No duplicate code found
         }
 
         private bool CheckCommentQuality(string code)
@@ -211,9 +235,43 @@ namespace WebApplication1.Controllers
 
         private bool CheckCodeFormatting(string code)
         {
-            // Check code formatting consistency, such as indentation, line breaks, and spacing
-            // Add your implementation here
-            return true; // For simplicity, assume code formatting is consistent
+            // Check for consistent spacing around operators and keywords
+            var operators = new[] { "+", "-", "*", "/", "=", "==", "!=", "<", ">", "<=", ">=", "&&", "||" };
+            foreach (var op in operators)
+            {
+                var pattern = $@"\S{op}\S";
+                if (Regex.IsMatch(code, pattern))
+                {
+                    return false; // No space around operator
+                }
+            }
+
+            // Check for spaces after keywords (e.g., if, for, while)
+            var keywords = new[] { "if", "for", "while", "switch", "catch" };
+            foreach (var keyword in keywords)
+            {
+                var pattern = $@"\b{keyword}\(";
+                if (Regex.IsMatch(code, pattern))
+                {
+                    return false; // No space after keyword
+                }
+            }
+
+            // Check for consistent indentation
+            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(line => line.Trim())
+                            .Where(line => !string.IsNullOrWhiteSpace(line))
+                            .ToList();
+
+            for (int i = 1; i < lines.Count; i++)
+            {
+                if (lines[i].StartsWith("}") && lines[i - 1].StartsWith("    "))
+                {
+                    return false; // Inconsistent indentation (expecting 4 spaces)
+                }
+            }
+
+            return true; // All formatting checks passed
         }
 
     }
