@@ -1,82 +1,220 @@
 ﻿using Common.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using WebAppService.Interface;
 using WebAppService.Service;
 namespace WebApplication1.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class StudentController:ControllerBase
+    public class StudentController : ControllerBase
     {
-        
-      public   IStudentservice _std; 
-        public StudentController(IStudentservice stdser) {
-            _std= stdser;
+        private readonly IStudentservice _std;
+
+        public StudentController(IStudentservice stdser)
+        {
+            _std = stdser;
         }
+
         [HttpGet]
         [Route("getAll")]
-        public async Task<List<Student>> getnames()
+        public async Task<List<Student>> GetNames()
         {
             return await _std.getnames();
         }
+
         [HttpPost]
         [Route("addNewStd")]
-        public async Task<bool> addNewStd(Student student)
+        public async Task<bool> AddNewStd(Student student)
         {
             return await _std.addNewStd(student);
         }
+
         [HttpPut]
         [Route("updateStd")]
-        //How to provide the fixed input value
-        public async Task<bool> updateStd(int id, Student student)
+        public async Task<bool> UpdateStd(int id, Student student)
         {
             return await _std.updateStd(id, student);
         }
+
         [HttpDelete]
         [Route("deleteStd")]
-        public async Task<bool> deleteStd(int id)
+        public async Task<bool> DeleteStd(int id)
         {
             return await _std.deleteStd(id);
         }
 
+        [HttpPost("codeanalysis")]
+        public ActionResult AnalyzeCode([FromBody] JsonElement codeAnalysisRequest)
+        {
+            // Check if the "code" field exists and is a string
+            if (!codeAnalysisRequest.TryGetProperty("code", out JsonElement codeElement) || codeElement.ValueKind != JsonValueKind.String)
+            {
+                return BadRequest("Code input is null or empty.");
+            }
 
+            // Extract the code from the JSON element
+            string code = codeElement.GetString();
 
-        /*// StudentService stdser = new StudentService();
-         [HttpGet]
-         [Route("StudentsStartsWith")]
-         public  Task< List<Student> > GetStudents1(char ch)
-         {
-             return  _std.GetStudentByAlpha(ch);
-         }
+            // Perform code analysis and calculate score
+            int length = code.Length;
+            int numberOfMethods = Regex.Matches(code, @"\b(public|private|protected|internal)\s+\w+\s+\w+\s*\(").Count;
+            int numberOfComments = Regex.Matches(code, @"(\/\/.*?$|\/\*.*?\*\/)", RegexOptions.Singleline | RegexOptions.Multiline).Count;
+            int complexity = CalculateComplexity(code);
+            bool followsNamingConventions = CheckNamingConventions(code);
+            bool hasErrorHandling = CheckErrorHandling(code);
+            bool hasCodeDuplication = CheckCodeDuplication(code);
+            bool hasGoodComments = CheckCommentQuality(code);
+            bool hasConsistentFormatting = CheckCodeFormatting(code);
 
-         [HttpGet]
-         [Route("GetAllStudents")]
-         public List<string> GetAllStudents()
-         {
-             return _std.Getstudents();
-         }
-         [HttpGet]
-         [Route("NotStartsWith")]
-         public List<string> GetStudentsnotstartswithc(char ch)
-         {
-             return _std.GetStudentNotStartWith(ch);
-         }
+            // Calculate score
+            int score = CalculateScore(length, numberOfMethods, numberOfComments, complexity, followsNamingConventions, hasErrorHandling, hasCodeDuplication, hasGoodComments, hasConsistentFormatting);
 
+            // Prepare analysis result
+            var analysisResult = new
+            {
+                Message = "Code analysis successful.",
+                Length = length,
+                NumberOfMethods = numberOfMethods,
+                NumberOfComments = numberOfComments,
+                Complexity = complexity,
+                FollowsNamingConventions = followsNamingConventions,
+                HasErrorHandling = hasErrorHandling,
+                HasCodeDuplication = hasCodeDuplication,
+                HasGoodComments = hasGoodComments,
+                HasConsistentFormatting = hasConsistentFormatting,
+                Score = score
+            };
 
-         [HttpGet]
-         [Route("IscontainsString")]
+            return Ok(analysisResult);
+        } 
 
-         public ActionResult<bool> iscontains1(string str)
-         {
-             bool t=_std.iscontains(str);
-             if (t)
-             {
-                 return _std.iscontains(str);
-             }
-             return NotFound();
-         }
-        */
+        private int CalculateScore(int length, int numberOfMethods, int numberOfComments, int complexity, bool followsNamingConventions, bool hasErrorHandling, bool hasCodeDuplication, bool hasGoodComments, bool hasConsistentFormatting)
+        {
+            int score = 100;
 
+            if (length > 1000)
+            {
+                score -= 10;
+            }
+            if (numberOfMethods > 10)
+            {
+                score -= 10;
+            }
+            if (numberOfComments < 5)
+            {
+                score -= 10;
+            }
+            if (complexity > 10)
+            {
+                score -= 20;
+            }
+            if (!followsNamingConventions)
+            {
+                score -= 15;
+            }
+            if (!hasErrorHandling)
+            {
+                score -= 10;
+            }
+            if (!hasCodeDuplication)
+            {
+                score -= 10;
+            }
+            if (!hasGoodComments)
+            {
+                score -= 10;
+            }
+            if (!hasConsistentFormatting)
+            {
+                score -= 5;
+            }
+
+            return score > 0 ? score : 0; // Ensure score is not negative
+        }
+
+        private int CalculateComplexity(string code)
+        {
+            // A simple complexity calculation based on number of conditionals and loops
+            int complexity = 1; // Base complexity for the method
+            complexity += Regex.Matches(code, @"\b(if|else if|switch|for|while|foreach|case)\b").Count;
+            return complexity;
+        }
+
+        private bool CheckNamingConventions(string code)
+        {
+            Regex variableRegex = new Regex(@"\b([a-z]+[a-zA-Z0-9]*)\b");
+            Regex classRegex = new Regex(@"\b([A-Z]+[a-zA-Z0-9]*)\b");
+
+            // Find all matches for variables and classes
+            MatchCollection variableMatches = variableRegex.Matches(code);
+            MatchCollection classMatches = classRegex.Matches(code);
+
+            // Check if any variable doesn't follow camelCase or any class doesn't follow PascalCase
+            foreach (Match variableMatch in variableMatches)
+            {
+                if (!IsCamelCase(variableMatch.Value))
+                {
+                    return false;
+                }
+            }
+
+            foreach (Match classMatch in classMatches)
+            {
+                if (!IsPascalCase(classMatch.Value))
+                {
+                    return false;
+                }
+            }
+
+            return true; // All identifiers follow naming conventions
+        }
+        private bool IsCamelCase(string identifier)
+        {
+            // Check if the identifier follows camelCase convention
+            // (first letter lowercase, subsequent words start with uppercase)
+            return char.IsLower(identifier[0]) && !identifier.Contains("_");
+        }
+
+        private bool IsPascalCase(string identifier)
+        {
+            // Check if the identifier follows PascalCase convention
+            // (first letter uppercase, subsequent words start with uppercase)
+            return char.IsUpper(identifier[0]) && !identifier.Contains("_");
+        }
+        private bool CheckErrorHandling(string code)
+        {
+            // Check if there are file I/O operations without error handling
+            if (code.Contains("File.Open") && !code.Contains("try") && !code.Contains("catch"))
+            {
+                return false; // File I/O operation without try-catch block
+            }
+
+            // Add more checks for other error-prone operations as needed
+
+            return true; // All potentially error-prone operations are properly handled
+        }
+
+        private bool CheckCodeDuplication(string code)
+        {
+            // Basic algorithm to detect duplicated code blocks
+            // For simplicity, let's assume there's no duplicated code
+            return true; 
+        }
+
+        private bool CheckCommentQuality(string code)
+        {// Check if there are comments present in the code
+         // For simplicity, let's assume any comment is considered good quality
+            return code.Contains("//") || code.Contains("/*");
+        }
+
+        private bool CheckCodeFormatting(string code)
+        {
+            // Check code formatting consistency, such as indentation, line breaks, and spacing
+            // Add your implementation here
+            return true; // For simplicity, assume code formatting is consistent
+        }
 
     }
 }
