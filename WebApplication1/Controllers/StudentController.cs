@@ -4,6 +4,11 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using WebAppService.Interface;
 using WebAppService.Service;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis;
+
+
 namespace WebApplication1.Controllers
 {
     [ApiController]
@@ -198,35 +203,60 @@ namespace WebApplication1.Controllers
 
         private bool CheckCodeDuplication(string code)
         {
-            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                             .Select(line => line.Trim())
-                             .Where(line => !string.IsNullOrWhiteSpace(line))
-                             .ToList();
+            // Parse the code into a syntax tree
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code);
+            var root = syntaxTree.GetRoot();
 
-            var lineHashes = new Dictionary<int, int>();
+            // Extract method bodies
+            var methodBodies = root.DescendantNodes().OfType<MethodDeclarationSyntax>()
+                                   .Select(method => method.Body)
+                                   .Where(body => body != null)
+                                   .ToList();
 
-            for (int i = 0; i < lines.Count - 1; i++)
+            if (methodBodies == null || !methodBodies.Any())
             {
-                string linePair = lines[i] + lines[i + 1];
-                int hash = linePair.GetHashCode();
+                return false; // No method bodies found, no duplication possible
+            }
 
-                if (lineHashes.ContainsKey(hash))
+            // Tokenize method bodies
+            var methodTokens = methodBodies
+                .Select(body => string.Join(" ", body.DescendantTokens().Select(token => token.Text)))
+                .ToList();
+
+            // Compare method bodies for similarity
+            var duplicatedMethods = new HashSet<string>();
+            for (int i = 0; i < methodTokens.Count; i++)
+            {
+                for (int j = i + 1; j < methodTokens.Count; j++)
                 {
-                    lineHashes[hash]++;
-                    if (lineHashes[hash] > 1)
+                    if (AreMethodsSimilar(methodTokens[i], methodTokens[j]))
                     {
-                        return false; // Duplicate code found
+                        duplicatedMethods.Add($"Method {i + 1} and Method {j + 1}");
                     }
-                }
-                else
-                {
-                    lineHashes[hash] = 1;
                 }
             }
 
-            return true; // No duplicate code found
+            if (duplicatedMethods.Any())
+            {
+                // For debugging purposes, print duplicated methods
+                Console.WriteLine("Duplicated methods:");
+                foreach (var methodPair in duplicatedMethods)
+                {
+                    Console.WriteLine(methodPair);
+                }
+                return true; // Duplicated methods found
+            }
+
+            return false; // No duplicated methods found
         }
 
+        // Define the method to compare two methods' tokens for similarity
+        private bool AreMethodsSimilar(string method1, string method2)
+        {
+            // Simple similarity check: if the methods' tokens are exactly the same, consider them similar
+            // You can replace this with a more sophisticated similarity check if needed
+            return method1 == method2;
+        }
         private bool CheckCommentQuality(string code)
         {// Check if there are comments present in the code
          // For simplicity, let's assume any comment is considered good quality
@@ -235,6 +265,23 @@ namespace WebApplication1.Controllers
 
         private bool CheckCodeFormatting(string code)
         {
+            // Check for consistent indentation (4 spaces)
+            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                var trimmedLine = line.TrimStart();
+                if (line.StartsWith(" ") && (line.Length - trimmedLine.Length) % 4 != 0)
+                {
+                    return false; // Indentation is not a multiple of 4 spaces
+                }
+            }
+
+            // Check for proper use of line breaks (one statement per line)
+            if (Regex.IsMatch(code, @"[^\s;{}]\s*;"))
+            {
+                return false; // No space before semicolon
+            }
+
             // Check for consistent spacing around operators and keywords
             var operators = new[] { "+", "-", "*", "/", "=", "==", "!=", "<", ">", "<=", ">=", "&&", "||" };
             foreach (var op in operators)
@@ -254,20 +301,6 @@ namespace WebApplication1.Controllers
                 if (Regex.IsMatch(code, pattern))
                 {
                     return false; // No space after keyword
-                }
-            }
-
-            // Check for consistent indentation
-            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                            .Select(line => line.Trim())
-                            .Where(line => !string.IsNullOrWhiteSpace(line))
-                            .ToList();
-
-            for (int i = 1; i < lines.Count; i++)
-            {
-                if (lines[i].StartsWith("}") && lines[i - 1].StartsWith("    "))
-                {
-                    return false; // Inconsistent indentation (expecting 4 spaces)
                 }
             }
 

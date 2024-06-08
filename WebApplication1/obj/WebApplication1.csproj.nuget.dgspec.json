@@ -40,9 +40,17 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.CodeAnalysis.CSharp.Extensions": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp.Workspaces": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
             "Microsoft.CodeCoverage": {
               "target": "Package",
-              "version": "[17.9.0, )"
+              "version": "[17.10.0, )"
             },
             "OpenCoverToCoberturaConverter": {
               "target": "Package",
@@ -135,13 +143,21 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.CodeAnalysis.CSharp.Extensions": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp.Workspaces": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
             "Microsoft.CodeCoverage": {
               "target": "Package",
-              "version": "[17.9.0, )"
+              "version": "[17.10.0, )"
             },
             "Microsoft.Data.SqlClient": {
               "target": "Package",
-              "version": "[5.1.5, )"
+              "version": "[5.2.1, )"
             },
             "OpenCoverToCoberturaConverter": {
               "target": "Package",
@@ -240,9 +256,17 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.CodeAnalysis.CSharp.Extensions": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp.Workspaces": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
             "Microsoft.CodeCoverage": {
               "target": "Package",
-              "version": "[17.9.0, )"
+              "version": "[17.10.0, )"
             },
             "OpenCoverToCoberturaConverter": {
               "target": "Package",
@@ -250,7 +274,7 @@
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.4.0, )"
+              "version": "[6.6.2, )"
             },
             "System.Data.SqlClient": {
               "target": "Package",
@@ -345,9 +369,17 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.CodeAnalysis.CSharp.Extensions": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp.Workspaces": {
+              "target": "Package",
+              "version": "[4.9.2, )"
+            },
             "Microsoft.CodeCoverage": {
               "target": "Package",
-              "version": "[17.9.0, )"
+              "version": "[17.10.0, )"
             },
             "OpenCoverToCoberturaConverter": {
               "target": "Package",
